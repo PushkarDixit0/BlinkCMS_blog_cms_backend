@@ -1,0 +1,23 @@
+{
+  "name": "blog-cms-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node --check src/app.js && node --check src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.18.2",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.6.3",
+    "multer": "^2.1.1",
+    "nanoid": "^3.3.12",
+    "nodemon": "^3.1.14",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
