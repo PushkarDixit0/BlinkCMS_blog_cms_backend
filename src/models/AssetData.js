@@ -27,8 +27,8 @@ const assetDataSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    path: {
-      type: String,
+    data: {
+      type: Buffer,
       required: true,
     },
     url: {

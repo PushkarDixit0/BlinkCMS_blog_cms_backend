@@ -1,24 +1,9 @@
-const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const { nanoid } = require("nanoid");
 
-const uploadRoot = path.resolve(process.cwd(), "uploads", "assets");
-
-fs.mkdirSync(uploadRoot, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, uploadRoot);
-  },
-  filename(req, file, cb) {
-    const assetId = nanoid();
-    const extension = path.extname(file.originalname || "").toLowerCase();
-
-    file.assetId = assetId;
-    cb(null, `${assetId}${extension}`);
-  },
-});
+const maxImageSize = 2 * 1024 * 1024;
+const storage = multer.memoryStorage();
 
 function imageFileFilter(req, file, cb) {
   if (!file.mimetype?.startsWith("image/")) {
@@ -27,6 +12,11 @@ function imageFileFilter(req, file, cb) {
     return cb(error);
   }
 
+  const assetId = nanoid();
+  const extension = path.extname(file.originalname || "").toLowerCase();
+
+  file.assetId = assetId;
+  file.generatedFileName = `${assetId}${extension}`;
   cb(null, true);
 }
 
@@ -34,7 +24,7 @@ const uploadEditorImage = multer({
   storage,
   fileFilter: imageFileFilter,
   limits: {
-    fileSize: 10 * 1024 * 1024,
+    fileSize: maxImageSize,
     files: 1,
   },
 }).single("image");

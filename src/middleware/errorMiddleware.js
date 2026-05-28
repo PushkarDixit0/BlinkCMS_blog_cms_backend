@@ -8,7 +8,7 @@ function errorHandler(error, req, res, next) {
   }
 
   if (error.code === "LIMIT_FILE_SIZE") {
-    return res.status(413).json({ message: "Uploaded image is too large." });
+    return res.status(413).json({ message: "Image size is more than 2MB." });
   }
 
   const status = error.status || 500;

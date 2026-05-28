@@ -36,7 +36,8 @@ async function serveAsset(req, res, next) {
     }
 
     res.type(asset.mimeType);
-    res.sendFile(assetService.getAssetFilePath(asset));
+    res.set("Content-Length", asset.size);
+    res.send(asset.data);
   } catch (error) {
     next(error);
   }
