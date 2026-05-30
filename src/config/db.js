@@ -10,6 +10,14 @@ async function connectDatabase() {
     await mongoose.connect(env.mongoUri, {
       serverSelectionTimeoutMS: 5000,
     });
+    await mongoose.connection
+      .collection("posts")
+      .dropIndex("slug_1")
+      .catch((error) => {
+        if (error.codeName !== "IndexNotFound") {
+          console.warn(`Could not drop old slug index: ${error.message}`);
+        }
+      });
 
     console.log("MongoDB connected.");
     return mongoose.connection;

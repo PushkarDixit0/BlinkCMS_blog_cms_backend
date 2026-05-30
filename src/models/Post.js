@@ -7,22 +7,14 @@ const postSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    slug: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-      unique: true,
-    },
-    excerpt: {
-      type: String,
-      trim: true,
-      default: "",
-    },
     content: {
       type: String,
       required: true,
       trim: true,
+    },
+    contentJson: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
     status: {
       type: String,
@@ -34,6 +26,11 @@ const postSchema = new mongoose.Schema(
       type: String,
       default: "admin",
     },
+    tags: [{
+      type: String,
+      required: true,
+      trim: true,
+    }],
     publishedAt: {
       type: Date,
       default: null,

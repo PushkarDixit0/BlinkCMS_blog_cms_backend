@@ -1,22 +1,19 @@
 const Post = require("../models/Post");
 
-function makeSlug(title) {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || `post-${Date.now()}`;
-}
-
 function normalizePostPayload(payload) {
   const status = payload.status === "published" ? "published" : "draft";
+  const tags = Array.isArray(payload.tags)
+    ? payload.tags
+        .map((tag) => String(tag).trim())
+        .filter(Boolean)
+    : [];
 
   return {
     title: payload.title,
-    slug: payload.slug || makeSlug(payload.title),
-    excerpt: payload.excerpt || "",
     content: payload.content,
+    contentJson: payload.contentJson || null,
     status,
+    tags,
     publishedAt: status === "published" ? new Date() : null,
   };
 }

@@ -32,4 +32,33 @@ function validatePost(req, res, next) {
   next();
 }
 
-module.exports = { validateLogin, validatePost };
+function validateComment(req, res, next) {
+  const { authorName, comment } = req.body;
+
+  if (isMissing(authorName) || isMissing(comment)) {
+    return res.status(400).json({
+      message: "Author name and comment are required.",
+    });
+  }
+
+  next();
+}
+
+function validateCommentStatus(req, res, next) {
+  const { status } = req.body;
+
+  if (!["approved", "unapproved", "hidden"].includes(status)) {
+    return res.status(400).json({
+      message: "Status must be approved, unapproved, or hidden.",
+    });
+  }
+
+  next();
+}
+
+module.exports = {
+  validateComment,
+  validateCommentStatus,
+  validateLogin,
+  validatePost,
+};
