@@ -7,6 +7,7 @@ const { uploadEditorImage } = require("../middleware/uploadMiddleware");
 const {
   validateComment,
   validatePost,
+  validateUpdatePost,
 } = require("../validations/requestValidation");
 
 const router = express.Router();
@@ -27,7 +28,12 @@ router.post(
   assetController.uploadEditorAsset,
 );
 router.post("/post", protectedAdmin, validatePost, postController.createPost);
-router.put("/posts/:id", protectedAdmin, validatePost, postController.updatePost);
+router.put(
+  "/posts/:id",
+  protectedAdmin,
+  validateUpdatePost,
+  postController.updatePost,
+);
 router.delete("/posts/:id", protectedAdmin, postController.deletePost);
 
 module.exports = router;
