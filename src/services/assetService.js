@@ -1,8 +1,12 @@
 const AssetData = require("../models/AssetData");
+const env = require("../config/env");
+
+function toAssetUrl(assetId) {
+  const path = `/post/assets/${assetId}`;
+  return env.apiUrl ? `${env.apiUrl.replace(/\/+$/, "")}${path}` : path;
+}
 
 function createAsset(file, user) {
-  const url = `/post/assets/${file.assetId}`;
-
   return AssetData.create({
     assetId: file.assetId,
     fileName: file.generatedFileName,
@@ -10,7 +14,7 @@ function createAsset(file, user) {
     mimeType: file.mimetype,
     size: file.size,
     data: file.buffer,
-    url,
+    url: toAssetUrl(file.assetId),
     createdBy: user?.username || "admin",
   });
 }

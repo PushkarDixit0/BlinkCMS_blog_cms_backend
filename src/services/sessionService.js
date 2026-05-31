@@ -1,38 +1,50 @@
-﻿const crypto = require("crypto");
+const crypto = require("crypto");
 const env = require("../config/env");
-
-const sessions = new Map();
+const { signJwt, verifyJwt } = require("../utils/jwt");
 
 function createSession(user) {
-  const sessionId = crypto.randomUUID();
+  const now = Date.now();
   const session = {
-    id: sessionId,
+    id: crypto.randomUUID(),
     user,
-    createdAt: Date.now(),
-    expiresAt: Date.now() + env.sessionExpiresInMs,
+    createdAt: now,
+    expiresAt: now + env.sessionExpiresInMs,
   };
 
-  sessions.set(sessionId, session);
-  return session;
-}
-
-function getSession(sessionId) {
-  const session = sessions.get(sessionId);
-
-  if (!session) {
-    return null;
-  }
-
-  if (session.expiresAt <= Date.now()) {
-    sessions.delete(sessionId);
-    return null;
-  }
+  session.token = signJwt(
+    {
+      sub: user.id,
+      username: user.username,
+      role: user.role,
+      sessionId: session.id,
+    },
+    env.sessionSecret,
+    Math.ceil(env.sessionExpiresInMs / 1000),
+  );
 
   return session;
 }
 
-function deleteSession(sessionId) {
-  sessions.delete(sessionId);
+function getSession(sessionToken) {
+  const payload = verifyJwt(sessionToken, env.sessionSecret);
+
+  if (!payload) {
+    return null;
+  }
+
+  return {
+    id: payload.sessionId,
+    user: {
+      id: payload.sub,
+      username: payload.username,
+      role: payload.role,
+    },
+    expiresAt: payload.exp * 1000,
+  };
+}
+
+function deleteSession() {
+  return true;
 }
 
 module.exports = {

@@ -2,7 +2,9 @@ const path = require("path");
 const multer = require("multer");
 const { nanoid } = require("nanoid");
 
-const maxImageSize = 2 * 1024 * 1024;
+const env = require("../config/env");
+
+const maxImageSize = env.maxImageSizeBytes;
 const storage = multer.memoryStorage();
 
 function imageFileFilter(req, file, cb) {

@@ -41,16 +41,67 @@ function loadEnvFile() {
 
 loadEnvFile();
 
+const isProduction = process.env.NODE_ENV === "production";
+
+function readNumber(name, fallback) {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function requireInProduction(name, value) {
+  if (isProduction && !value) {
+    throw new Error(`${name} is required when NODE_ENV=production.`);
+  }
+}
+
+function requireValue(name, value) {
+  if (!value) {
+    throw new Error(`${name} is required.`);
+  }
+}
+
+const mongoUri =
+  process.env.MONGODB_URI ||
+  process.env.MONGO_URI ||
+  process.env.MONGO_URL ||
+  "";
+const jwtSecret = process.env.JWT_SECRET || "";
+const sessionSecret = process.env.SESSION_SECRET || "";
+const adminUsername = process.env.ADMIN_USERNAME || "";
+const adminPassword = process.env.ADMIN_PASSWORD || "";
+const clientUrl = process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || "";
+
+if (isProduction || process.env.DB_REQUIRED === "true") {
+  requireValue("MONGODB_URI", mongoUri);
+}
+
+requireInProduction("JWT_SECRET", jwtSecret);
+requireInProduction("SESSION_SECRET", sessionSecret);
+requireInProduction("ADMIN_USERNAME", adminUsername);
+requireInProduction("ADMIN_PASSWORD", adminPassword);
+requireInProduction("CLIENT_URL", clientUrl);
+
 const env = {
+  nodeEnv: process.env.NODE_ENV || "development",
+  isProduction,
   port: Number(process.env.PORT) || 5000,
-  mongoUri: process.env.MONGO_URI || process.env.MONGO_URL || "mongodb://localhost:27017/blog-cms",
-  dbRequired: process.env.DB_REQUIRED === "true",
-  jwtSecret: process.env.JWT_SECRET || "change-this-development-secret",
-  jwtExpiresInSeconds: Number(process.env.JWT_EXPIRES_IN_SECONDS) || 60 * 60,
-  sessionExpiresInMs: Number(process.env.SESSION_EXPIRES_IN_MS) || 60 * 60 * 1000,
-  adminUsername: process.env.ADMIN_USERNAME || "admin",
-  adminPassword: process.env.ADMIN_PASSWORD || "admin123",
-  clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  mongoUri,
+  dbRequired: process.env.DB_REQUIRED === "true" || isProduction,
+  jwtSecret,
+  jwtExpiresInSeconds: readNumber("JWT_EXPIRES_IN_SECONDS", 60 * 60),
+  sessionExpiresInMs: readNumber("SESSION_EXPIRES_IN_MS", 60 * 60 * 1000),
+  adminUsername,
+  adminPassword,
+  clientUrl,
+  clientOrigins: clientUrl
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+  apiUrl: process.env.API_URL || "",
+  maxJsonBodySize: process.env.MAX_JSON_BODY_SIZE || "1mb",
+  maxImageSizeBytes: readNumber("MAX_IMAGE_SIZE_BYTES", 2 * 1024 * 1024),
+  mongoMaxRetries: readNumber("MONGO_MAX_RETRIES", 3),
+  mongoRetryDelayMs: readNumber("MONGO_RETRY_DELAY_MS", 1000),
 };
 
 module.exports = env;

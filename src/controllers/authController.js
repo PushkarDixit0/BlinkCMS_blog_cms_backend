@@ -13,6 +13,7 @@ function login(req, res) {
     session: {
       id: authResult.session.id,
       expiresAt: authResult.session.expiresAt,
+      token: authResult.session.token,
     },
     token: authResult.token,
   });

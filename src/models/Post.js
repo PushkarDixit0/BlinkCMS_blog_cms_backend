@@ -39,4 +39,7 @@ const postSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+postSchema.index({ status: 1, publishedAt: -1, createdAt: -1 });
+postSchema.index({ updatedAt: -1 });
+
 module.exports = mongoose.model("Post", postSchema);
