@@ -88,6 +88,7 @@ const env = {
   mongoUri,
   dbRequired: process.env.DB_REQUIRED === "true" || isProduction,
   jwtSecret,
+  sessionSecret,
   jwtExpiresInSeconds: readNumber("JWT_EXPIRES_IN_SECONDS", 60 * 60),
   sessionExpiresInMs: readNumber("SESSION_EXPIRES_IN_MS", 60 * 60 * 1000),
   adminUsername,

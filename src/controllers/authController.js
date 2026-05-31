@@ -1,7 +1,14 @@
 ﻿const authService = require("../services/authService");
 
-function login(req, res) {
-  const authResult = authService.authenticateAdmin(req.body);
+function login(req, res, next) {
+  let authResult;
+
+  try {
+    authResult = authService.authenticateAdmin(req.body);
+  } catch (error) {
+    console.error("Admin login failed while creating auth tokens.", error);
+    return next(error);
+  }
 
   if (!authResult) {
     return res.status(401).json({ message: "Invalid admin credentials." });
