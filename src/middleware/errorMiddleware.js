@@ -28,7 +28,9 @@ function errorHandler(error, req, res, next) {
   ) {
     console.error("Database connection failed.", error);
     return res.status(503).json({
-      message: "Database unavailable. Check MONGODB_URI and MongoDB Atlas Network Access.",
+      message: env.isProduction
+        ? "Service temporarily unavailable."
+        : "Database unavailable. Check MONGODB_URI and MongoDB Atlas Network Access.",
     });
   }
 
