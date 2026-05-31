@@ -41,8 +41,8 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use(ensureDatabase);
 app.use(authRoutes);
+app.use(ensureDatabase);
 app.use(adminRoutes);
 app.use(postRoutes);
 
