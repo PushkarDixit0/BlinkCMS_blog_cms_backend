@@ -21,6 +21,17 @@ function errorHandler(error, req, res, next) {
     return res.status(400).json({ message: error.message });
   }
 
+  if (
+    error.name === "MongoServerSelectionError" ||
+    error.name === "MongoNetworkError" ||
+    error.name === "MongooseServerSelectionError"
+  ) {
+    console.error("Database connection failed.", error);
+    return res.status(503).json({
+      message: "Database unavailable. Check MONGODB_URI and MongoDB Atlas Network Access.",
+    });
+  }
+
   const status = error.status || 500;
   const message =
     status >= 500 && env.isProduction
